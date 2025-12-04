@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Passageiros / Passagierliste</title>
+    <style>
+        /* Base Styles (Screen) */
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f9fafb;
+            color: #1e293b;
+            margin: 0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 56rem; /* max-w-4xl */
+            margin: 0 auto;
+        }
+
+        /* Header Card */
+        .header {
+            background-color: #1e3a8a; /* blue-900 */
+            color: white;
+            padding: 1.5rem;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title-group h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0;
+        }
+
+        .title-group p {
+            color: #bfdbfe; /* blue-200 */
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            margin-bottom: 0;
+        }
+
+        .print-btn {
+            background-color: #1d4ed8; /* blue-700 */
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .print-btn:hover {
+            background-color: #2563eb; /* blue-600 */
+        }
+
+        /* Table Card */
+        .table-container {
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f3f4f6; /* gray-100 */
+            border-bottom: 1px solid #d1d5db; /* gray-300 */
+            padding: 1rem;
+            font-weight: 600;
+            color: #374151; /* gray-700 */
+        }
+
+        th .subtitle {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: #6b7280; /* gray-500 */
+            margin-top: 0.25rem;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb; /* gray-200 */
+        }
+
+        tr:hover {
+            background-color: #f9fafb; /* gray-50 */
+        }
+
+        .text-center { text-align: center; }
+        .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        .text-italic { font-style: italic; color: #9ca3af; }
+
+        .footer-total {
+            padding: 1rem;
+            background-color: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .print-footer {
+            display: none;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #9ca3af;
+        }
+
+        .print-footer-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+                padding: 0;
+                margin: 0;
+                font-family: serif; /* Better for reading on paper */
+            }
+
+            .container {
+                max-width: 100%;
+                width: 100%;
+                margin: 0;
+            }
+
+            .header {
+                background-color: white;
+                color: black;
+                box-shadow: none;
+                padding: 0;
+                margin-bottom: 1rem;
+                border-bottom: 2px solid black;
+                display: block;
+            }
+
+            .title-group h1 {
+                font-size: 1.5rem;
+            }
+
+            .title-group p {
+                color: black;
+                display: none; /* Hide screen date */
+            }
+
+            /* Show print-specific date */
+            .print-only-date {
+                display: block !important;
+                margin-top: 0.5rem;
+                font-size: 0.9rem;
+                font-weight: bold;
+            }
+
+            .print-btn {
+                display: none;
+            }
+
+            .table-container {
+                box-shadow: none;
+                border: none;
+                border-radius: 0;
+            }
+
+            th {
+                background-color: white;
+                color: black;
+                border-bottom: 2px solid black;
+                padding: 0.5rem;
+            }
+
+            th .subtitle {
+                color: black;
+            }
+
+            td {
+                border-bottom: 1px solid #ccc;
+                padding: 0.5rem;
+                color: black;
+            }
+
+            tr:hover {
+                background-color: white;
+            }
+
+            .text-italic {
+                color: #666;
+            }
+
+            .footer-total {
+                display: none;
+            }
+
+            .print-footer {
+                display: block;
+                border-top: 1px solid black;
+                color: black;
+            }
+            
+            .print-footer-row {
+                color: black;
+            }
+
+            /* Ensure table rows don't break awkwardly */
+            tr {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Utility to show date only in print */
+        .print-only-date {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="title-group">
+                <h1>Lista de Passageiros / Passagierliste</h1>
+                <p>Ausflug Datum / Data da Viagem: 13/12/2025</p>
+                <div class="print-only-date">
+                    <div>Data da Viagem: Sábado, 13 de Dezembro / 2025</div>
+                    <div>Ausflug Datum: Samstag, 13. Dezember / 2025</div>
+                </div>
+            </div>
+            <button class="print-btn" onclick="window.print()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                Imprimir / Drucken
+            </button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 50px;">#</th>
+                        <th>
+                            Nome Completo
+                            <div class="subtitle">Vollständiger Name</div>
+                        </th>
+                        <th>
+                            CPF
+                            <div class="subtitle">Steuernummer</div>
+                        </th>
+                        <th>
+                            Data de Nascimento
+                            <div class="subtitle">Geburtsdatum</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="passenger-list">
+                    <!-- Rows will be populated by JavaScript -->
+                </tbody>
+            </table>
+            
+            <div class="footer-total">
+                Total: <strong id="total-count">0</strong>
+            </div>
+        </div>
+
+        <!-- Print Footer -->
+        <div class="print-footer">
+            <div class="print-footer-row">
+                <div>
+                    <p>Assinatura do Motorista / Unterschrift des Fahrers: _______________________</p>
+                </div>
+                <div>
+                    <p>Assinatura do Guia / Unterschrift des Reiseleiters: _______________________</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Passenger Data
+        const passengers = [
+            { id: 1, name: "Dmitri Romashov", cpf: "802.703.299-78", dob: "1974-06-12" },
+            { id: 2, name: "Maria Koblova Hernandez", cpf: "137.475.479-07", dob: "2017-11-21" },
+            { id: 3, name: "Manuella Anastácia Rech", cpf: "108.691.739-10", dob: "2013-05-02" },
+            { id: 4, name: "Sandra zietz rech", cpf: "069.530.399-65", dob: "1988-03-04" },
+            { id: 5, name: "Antônio Márcio Rech", cpf: "043.224.699-14", dob: "1984-12-07" },
+            { id: 6, name: "Lívia Maria Rech", cpf: "142.273.309-20", dob: "2018-05-25" },
+            { id: 7, name: "Helena Carolina Rech", cpf: "155.006.739-71", dob: "2020-04-07" },
+            { id: 8, name: "Rafaela Betina Rech", cpf: "163.249.689-52", dob: "2022-05-14" },
+            { id: 9, name: "Alexandra Derid", cpf: "032.168.889-91", dob: "1982-01-21" },
+            { id: 10, name: "Fernanda da Silva dos Santos", cpf: "112.747.739-03", dob: "1998-05-09" },
+            
+            { id: 11, name: "Jonathan Edwards Brikalski de Souza", cpf: "102.269.149-09", dob: "2012-02-13" },
+            { id: 12, name: "Alice Paola Brikalski de Souza", cpf: "124.107.369-47", dob: "2015-12-03" },
+            { id: 13, name: "Miriam F. S. Brikalski de Souza", cpf: "045.123.729-38", dob: "1983-07-07" },
+            
+            { id: 14, name: "Maria Eduarda  Pithan Flores", cpf: "055.182.950-81", dob: "2017-08-05" },
+            { id: 15, name: "Eliane Martins", cpf: "044.886.379-06", dob: "1988-08-27" },
+            { id: 16, name: "Agatha Hardt Puckes", cpf: "126.815.829-11", dob: "2014-04-18" },
+            { id: 17, name: "Adriane Hardt", cpf: "040.205.779-19", dob: "1983-01-05" },
+            { id: 18, name: "Larissa Thiesen Ruthes", cpf: "143.679.489-78", dob: "2003-05-25" },
+            
+            { id: 19, name: "Norma Ladis Kricheldorf", cpf: "683.927.379-20", dob: "1945-04-30" },
+            { id: 20, name: "Diego Eduardo de Lima Danner", cpf: "057.353.599-08", dob: "1986-12-06" },
+            { id: 21, name: "Janice Maria Lutz", cpf: "442.819.789-68", dob: "1954-06-12" },
+            { id: 22, name: "Sieglinde Reichert", cpf: "312.691.259-15", dob: "1949-08-03" },
+            { id: 23, name: "Yves Brunkow Graziani", cpf: "088.219.649-90", dob: "1999-03-29" },
+            { id: 24, name: "Ivonete Brunkow Graziani", cpf: "293.606.769-34", dob: "1955-11-18" }
+        ];
+
+        // Helper Functions
+        function formatDate(dateString) {
+            if (!dateString) return '<span class="text-italic">--/--/----</span>';
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        function formatCPF(cpfString) {
+            if (!cpfString) return '<span class="text-italic">Pendente / Ausstehend</span>';
+            return cpfString;
+        }
+
+        // Render Table
+        const tbody = document.getElementById('passenger-list');
+        document.getElementById('total-count').innerText = passengers.length;
+
+        passengers.forEach((p, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="text-center" style="color: #6b7280;">${index + 1}</td>
+                <td style="font-weight: 500;">${p.name}</td>
+                <td class="font-mono" style="color: #374151;">${formatCPF(p.cpf)}</td>
+                <td style="color: #374151;">${formatDate(p.dob)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    </script>
+</body>
+</html>
