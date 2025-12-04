@@ -234,6 +234,59 @@
         .print-only-date {
             display: none;
         }
+
+        /* Add Passenger Form Styles */
+        .add-passenger-form {
+            background-color: #fff;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .add-passenger-form .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .add-passenger-form .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .add-passenger-form label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .add-passenger-form input {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+
+        .add-btn {
+            background-color: #16a34a; /* green-600 */
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .add-btn:hover {
+            background-color: #15803d; /* green-700 */
+        }
     </style>
 </head>
 <body>
@@ -258,6 +311,27 @@
                 </svg>
                 Imprimir / Drucken
             </button>
+        </div>
+
+        <!-- Add Passenger Form -->
+        <div class="add-passenger-form">
+            <form id="add-passenger">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fullName">Nome Completo / Vollständiger Name</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cpf">CPF / Steuernummer</label>
+                        <input type="text" id="cpf" name="cpf" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dob">Data de Nascimento / Geburtsdatum</label>
+                        <input type="date" id="dob" name="dob" required>
+                    </div>
+                </div>
+                <button type="submit" class="add-btn">Adicionar Passageiro / Passagier hinzufügen</button>
+            </form>
         </div>
 
         <!-- Table -->
@@ -348,19 +422,56 @@
             return cpfString;
         }
 
-        // Render Table
         const tbody = document.getElementById('passenger-list');
-        document.getElementById('total-count').innerText = passengers.length;
+        const totalCount = document.getElementById('total-count');
 
-        passengers.forEach((p, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="text-center" style="color: #6b7280;">${index + 1}</td>
-                <td style="font-weight: 500;">${p.name}</td>
-                <td class="font-mono" style="color: #374151;">${formatCPF(p.cpf)}</td>
-                <td style="color: #374151;">${formatDate(p.dob)}</td>
-            `;
-            tbody.appendChild(tr);
+        function renderTable() {
+            // Clear existing rows
+            tbody.innerHTML = '';
+
+            // Update total count
+            totalCount.innerText = passengers.length;
+
+            // Render each passenger
+            passengers.forEach((p, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="text-center" style="color: #6b7280;">${index + 1}</td>
+                    <td style="font-weight: 500;">${p.name}</td>
+                    <td class="font-mono" style="color: #374151;">${formatCPF(p.cpf)}</td>
+                    <td style="color: #374151;">${formatDate(p.dob)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Initial Render
+        renderTable();
+
+        // Handle Form Submission
+        const form = document.getElementById('add-passenger');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent page reload
+
+            const name = document.getElementById('fullName').value.trim();
+            const cpf = document.getElementById('cpf').value.trim();
+            const dob = document.getElementById('dob').value;
+
+            if (!name || !cpf || !dob) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
+            const newPassenger = {
+                id: passengers.length > 0 ? Math.max(...passengers.map(p => p.id)) + 1 : 1,
+                name: name,
+                cpf: cpf,
+                dob: dob
+            };
+
+            passengers.push(newPassenger);
+            renderTable(); // Re-render the table with the new passenger
+            form.reset(); // Clear form fields
         });
     </script>
 </body>
