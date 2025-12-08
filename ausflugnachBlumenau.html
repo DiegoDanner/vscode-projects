@@ -344,6 +344,80 @@
             display: flex;
             gap: 0.5rem;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 1.5rem;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateY(0); }
+            to { transform: translateY(-50px); }
+        }
     </style>
 </head>
 <body>
@@ -392,8 +466,9 @@
                 </div>
                 <button type="submit" class="add-btn">Adicionar Passageiro / Passagier hinzufügen</button>
             </form>
-            <div style="margin-top: 1rem;">
-                <button class="action-btn" onclick="saveCurrentPassengers()">Salvar Passageiros para o Futuro</button>
+            <div class="button-group" style="margin-top: 1rem; display: flex; gap: 1rem;">
+                <button class="action-btn" style="flex: 1;" onclick="saveCurrentPassengers()">Salvar Passageiros para o Futuro</button>
+                <button class="action-btn" style="flex: 1; background-color: #374151;" onclick="openModal()">Ver Passageiros Salvos</button>
             </div>
         </div>
 
@@ -428,22 +503,29 @@
             </div>
         </div>
 
-        <!-- Saved Passengers Section -->
-        <div class="add-passenger-form" style="margin-top: 2rem;">
-            <h2>Passageiros Salvos</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome Completo</th>
-                            <th>CPF</th>
-                            <th class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="saved-passenger-list">
-                        <!-- Saved passengers will be populated here -->
-                    </tbody>
-                </table>
+        <!-- Saved Passengers Modal -->
+        <div id="saved-passengers-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Passageiros Salvos</h2>
+                    <span class="close-btn" onclick="closeModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nome Completo</th>
+                                    <th>CPF</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="saved-passenger-list">
+                                <!-- Saved passengers will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -471,6 +553,29 @@
         const savedTbody = document.getElementById('saved-passenger-list');
         const totalCount = document.getElementById('total-count');
         const form = document.getElementById('add-passenger');
+        const modal = document.getElementById('saved-passengers-modal');
+
+        // Modal Functions
+        function openModal() {
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modalContent = modal.querySelector('.modal-content');
+            modalContent.style.animation = 'slideOut 0.3s forwards';
+            modal.style.animation = 'fadeOut 0.3s forwards';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modalContent.style.animation = 'slideIn 0.3s';
+                modal.style.animation = 'fadeIn 0.3s';
+            }, 300);
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
 
         // Helper Functions
         function formatDate(dateString) {
