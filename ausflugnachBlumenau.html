@@ -288,6 +288,62 @@
         .add-btn:hover {
             background-color: #15803d; /* green-700 */
         }
+
+        /* Additional Button Styles */
+        .action-btn {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+
+        .clear-btn {
+            background-color: #dc2626; /* red-600 */
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background-color: #b91c1c; /* red-700 */
+        }
+
+        .delete-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: #ef4444; /* red-500 */
+            font-size: 1.25rem;
+        }
+
+        .delete-btn:hover {
+            color: #dc2626; /* red-600 */
+        }
+
+        .add-saved-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: #16a34a; /* green-600 */
+            font-size: 1.25rem;
+        }
+
+        .add-saved-btn:hover {
+            color: #15803d; /* green-700 */
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -304,14 +360,17 @@
                     <div>Ausflug Datum: Samstag, 13. Dezember / 2025</div>
                 </div>
             </div>
-            <button class="print-btn" onclick="window.print()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
-                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                    <rect x="6" y="14" width="12" height="8"></rect>
-                </svg>
-                Imprimir / Drucken
-            </button>
+            <div class="button-group">
+                <button class="print-btn clear-btn" onclick="clearCurrentPassengers()">Zerar Lista</button>
+                <button class="print-btn" onclick="window.print()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    Imprimir / Drucken
+                </button>
+            </div>
         </div>
 
         <!-- Add Passenger Form -->
@@ -333,6 +392,9 @@
                 </div>
                 <button type="submit" class="add-btn">Adicionar Passageiro / Passagier hinzufügen</button>
             </form>
+            <div style="margin-top: 1rem;">
+                <button class="action-btn" onclick="saveCurrentPassengers()">Salvar Passageiros para o Futuro</button>
+            </div>
         </div>
 
         <!-- Table -->
@@ -353,6 +415,7 @@
                             Data de Nascimento
                             <div class="subtitle">Geburtsdatum</div>
                         </th>
+                        <th class="text-center">Ação</th>
                     </tr>
                 </thead>
                 <tbody id="passenger-list">
@@ -362,6 +425,25 @@
             
             <div class="footer-total">
                 Total: <strong id="total-count">0</strong>
+            </div>
+        </div>
+
+        <!-- Saved Passengers Section -->
+        <div class="add-passenger-form" style="margin-top: 2rem;">
+            <h2>Passageiros Salvos</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome Completo</th>
+                            <th>CPF</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="saved-passenger-list">
+                        <!-- Saved passengers will be populated here -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -381,35 +463,14 @@
 
     <script>
         // Passenger Data
-        const passengers = [
-            { id: 1, name: "Dmitri Romashov", cpf: "802.703.299-78", dob: "1974-06-12" },
-            { id: 2, name: "Maria Koblova Hernandez", cpf: "137.475.479-07", dob: "2017-11-21" },
-            { id: 3, name: "Manuella Anastácia Rech", cpf: "108.691.739-10", dob: "2013-05-02" },
-            { id: 4, name: "Sandra zietz rech", cpf: "069.530.399-65", dob: "1988-03-04" },
-            { id: 5, name: "Antônio Márcio Rech", cpf: "043.224.699-14", dob: "1984-12-07" },
-            { id: 6, name: "Lívia Maria Rech", cpf: "142.273.309-20", dob: "2018-05-25" },
-            { id: 7, name: "Helena Carolina Rech", cpf: "155.006.739-71", dob: "2020-04-07" },
-            { id: 8, name: "Rafaela Betina Rech", cpf: "163.249.689-52", dob: "2022-05-14" },
-            { id: 9, name: "Alexandra Derid", cpf: "032.168.889-91", dob: "1982-01-21" },
-            { id: 10, name: "Fernanda da Silva dos Santos", cpf: "112.747.739-03", dob: "1998-05-09" },
-            
-            { id: 11, name: "Jonathan Edwards Brikalski de Souza", cpf: "102.269.149-09", dob: "2012-02-13" },
-            { id: 12, name: "Alice Paola Brikalski de Souza", cpf: "124.107.369-47", dob: "2015-12-03" },
-            { id: 13, name: "Miriam F. S. Brikalski de Souza", cpf: "045.123.729-38", dob: "1983-07-07" },
-            
-            { id: 14, name: "Maria Eduarda  Pithan Flores", cpf: "055.182.950-81", dob: "2017-08-05" },
-            { id: 15, name: "Eliane Martins", cpf: "044.886.379-06", dob: "1988-08-27" },
-            { id: 16, name: "Agatha Hardt Puckes", cpf: "126.815.829-11", dob: "2014-04-18" },
-            { id: 17, name: "Adriane Hardt", cpf: "040.205.779-19", dob: "1983-01-05" },
-            { id: 18, name: "Larissa Thiesen Ruthes", cpf: "143.679.489-78", dob: "2003-05-25" },
-            
-            { id: 19, name: "Norma Ladis Kricheldorf", cpf: "683.927.379-20", dob: "1945-04-30" },
-            { id: 20, name: "Diego Eduardo de Lima Danner", cpf: "057.353.599-08", dob: "1986-12-06" },
-            { id: 21, name: "Janice Maria Lutz", cpf: "442.819.789-68", dob: "1954-06-12" },
-            { id: 22, name: "Sieglinde Reichert", cpf: "312.691.259-15", dob: "1949-08-03" },
-            { id: 23, name: "Yves Brunkow Graziani", cpf: "088.219.649-90", dob: "1999-03-29" },
-            { id: 24, name: "Ivonete Brunkow Graziani", cpf: "293.606.769-34", dob: "1955-11-18" }
-        ];
+        let currentPassengers = [];
+        let savedPassengers = [];
+
+        // DOM Elements
+        const currentTbody = document.getElementById('passenger-list');
+        const savedTbody = document.getElementById('saved-passenger-list');
+        const totalCount = document.getElementById('total-count');
+        const form = document.getElementById('add-passenger');
 
         // Helper Functions
         function formatDate(dateString) {
@@ -423,36 +484,141 @@
             return cpfString;
         }
 
-        const tbody = document.getElementById('passenger-list');
-        const totalCount = document.getElementById('total-count');
+        // Render Functions
+        function renderCurrentPassengersTable() {
+            currentTbody.innerHTML = '';
+            totalCount.innerText = currentPassengers.length;
 
-        function renderTable() {
-            // Clear existing rows
-            tbody.innerHTML = '';
-
-            // Update total count
-            totalCount.innerText = passengers.length;
-
-            // Render each passenger
-            passengers.forEach((p, index) => {
+            currentPassengers.forEach((p, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="text-center" style="color: #6b7280;">${index + 1}</td>
                     <td style="font-weight: 500;">${p.name}</td>
                     <td class="font-mono" style="color: #374151;">${formatCPF(p.cpf)}</td>
                     <td style="color: #374151;">${formatDate(p.dob)}</td>
+                    <td class="text-center">
+                        <button class="delete-btn" onclick="deleteCurrentPassenger(${p.id})">&times;</button>
+                    </td>
                 `;
-                tbody.appendChild(tr);
+                currentTbody.appendChild(tr);
             });
         }
 
-        // Initial Render
-        renderTable();
+        function renderSavedPassengersTable() {
+            savedTbody.innerHTML = '';
+            savedPassengers.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${p.name}</td>
+                    <td>${formatCPF(p.cpf)}</td>
+                    <td class="text-center">
+                        <button class="add-saved-btn" onclick="addSavedPassengerToCurrent('${p.cpf}')">&#43;</button>
+                        <button class="delete-btn" onclick="deleteSavedPassenger('${p.cpf}')">&times;</button>
+                    </td>
+                `;
+                savedTbody.appendChild(tr);
+            });
+        }
+
+        function renderAllTables() {
+            renderCurrentPassengersTable();
+            renderSavedPassengersTable();
+        }
+
+        // Data Management
+        function loadSavedPassengers() {
+            const passengersJSON = localStorage.getItem('savedPassengers');
+            savedPassengers = passengersJSON ? JSON.parse(passengersJSON) : [];
+        }
+
+        // Initial Load
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialPassengerData = [
+                { id: 1, name: "Dmitri Romashov", cpf: "802.703.299-78", dob: "1974-06-12" },
+                { id: 2, name: "Maria Koblova Hernandez", cpf: "137.475.479-07", dob: "2017-11-21" },
+                { id: 3, name: "Manuella Anastácia Rech", cpf: "108.691.739-10", dob: "2013-05-02" },
+                { id: 4, name: "Sandra zietz rech", cpf: "069.530.399-65", dob: "1988-03-04" },
+                { id: 5, name: "Antônio Márcio Rech", cpf: "043.224.699-14", dob: "1984-12-07" },
+                { id: 6, name: "Lívia Maria Rech", cpf: "142.273.309-20", dob: "2018-05-25" },
+                { id: 7, name: "Helena Carolina Rech", cpf: "155.006.739-71", dob: "2020-04-07" },
+                { id: 8, name: "Rafaela Betina Rech", cpf: "163.249.689-52", dob: "2022-05-14" },
+                { id: 9, name: "Alexandra Derid", cpf: "032.168.889-91", dob: "1982-01-21" },
+                { id: 10, name: "Fernanda da Silva dos Santos", cpf: "112.747.739-03", dob: "1998-05-09" },
+                { id: 11, name: "Jonathan Edwards Brikalski de Souza", cpf: "102.269.149-09", dob: "2012-02-13" },
+                { id: 12, name: "Alice Paola Brikalski de Souza", cpf: "124.107.369-47", dob: "2015-12-03" },
+                { id: 13, name: "Miriam F. S. Brikalski de Souza", cpf: "045.123.729-38", dob: "1983-07-07" },
+                { id: 14, name: "Maria Eduarda  Pithan Flores", cpf: "055.182.950-81", dob: "2017-08-05" },
+                { id: 15, name: "Eliane Martins", cpf: "044.886.379-06", dob: "1988-08-27" },
+                { id: 16, name: "Agatha Hardt Puckes", cpf: "126.815.829-11", dob: "2014-04-18" },
+                { id: 17, name: "Adriane Hardt", cpf: "040.205.779-19", dob: "1983-01-05" },
+                { id: 18, name: "Larissa Thiesen Ruthes", cpf: "143.679.489-78", dob: "2003-05-25" },
+                { id: 19, name: "Norma Ladis Kricheldorf", cpf: "683.927.379-20", dob: "1945-04-30" },
+                { id: 20, name: "Diego Eduardo de Lima Danner", cpf: "057.353.599-08", dob: "1986-12-06" },
+                { id: 21, name: "Janice Maria Lutz", cpf: "442.819.789-68", dob: "1954-06-12" },
+                { id: 22, name: "Sieglinde Reichert", cpf: "312.691.259-15", dob: "1949-08-03" },
+                { id: 23, name: "Yves Brunkow Graziani", cpf: "088.219.649-90", dob: "1999-03-29" },
+                { id: 24, name: "Ivonete Brunkow Graziani", cpf: "293.606.769-34", dob: "1955-11-18" }
+            ];
+
+            if (!localStorage.getItem('savedPassengers')) {
+                localStorage.setItem('savedPassengers', JSON.stringify(initialPassengerData));
+            }
+
+            loadSavedPassengers();
+            renderAllTables();
+        });
+
+        // Passenger Management Functions
+        function deleteCurrentPassenger(id) {
+            currentPassengers = currentPassengers.filter(p => p.id !== id);
+            renderCurrentPassengersTable();
+        }
+
+        function clearCurrentPassengers() {
+            if (confirm("Tem certeza que deseja zerar a lista de passageiros da viagem atual?")) {
+                currentPassengers = [];
+                renderCurrentPassengersTable();
+            }
+        }
+
+        function saveCurrentPassengers() {
+            if (currentPassengers.length === 0) {
+                alert("Não há passageiros na lista atual para salvar.");
+                return;
+            }
+
+            currentPassengers.forEach(p => {
+                if (!savedPassengers.some(sp => sp.cpf === p.cpf)) {
+                    savedPassengers.push(p);
+                }
+            });
+
+            localStorage.setItem('savedPassengers', JSON.stringify(savedPassengers));
+            alert("Passageiros da viagem atual foram salvos!");
+            renderSavedPassengersTable();
+        }
+
+        function addSavedPassengerToCurrent(cpf) {
+            const passengerToAdd = savedPassengers.find(p => p.cpf === cpf);
+            if (passengerToAdd && !currentPassengers.some(p => p.cpf === cpf)) {
+                currentPassengers.push({ ...passengerToAdd, id: Date.now() });
+                renderCurrentPassengersTable();
+            } else {
+                alert("Este passageiro já está na lista da viagem atual.");
+            }
+        }
+
+        function deleteSavedPassenger(cpf) {
+            if (confirm("Tem certeza que deseja remover este passageiro da sua lista de salvos?")) {
+                savedPassengers = savedPassengers.filter(p => p.cpf !== cpf);
+                localStorage.setItem('savedPassengers', JSON.stringify(savedPassengers));
+                renderSavedPassengersTable();
+            }
+        }
 
         // Handle Form Submission
-        const form = document.getElementById('add-passenger');
         form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent page reload
+            event.preventDefault();
 
             const name = document.getElementById('fullName').value.trim();
             const cpf = document.getElementById('cpf').value.trim();
@@ -463,16 +629,21 @@
                 return;
             }
 
+            if (currentPassengers.some(p => p.cpf === cpf)) {
+                alert("Um passageiro com este CPF já está na lista da viagem atual.");
+                return;
+            }
+
             const newPassenger = {
-                id: passengers.length > 0 ? Math.max(...passengers.map(p => p.id)) + 1 : 1,
+                id: Date.now(), // Simple unique ID
                 name: name,
                 cpf: cpf,
                 dob: dob
             };
 
-            passengers.push(newPassenger);
-            renderTable(); // Re-render the table with the new passenger
-            form.reset(); // Clear form fields
+            currentPassengers.push(newPassenger);
+            renderCurrentPassengersTable();
+            form.reset();
         });
     </script>
 </body>
