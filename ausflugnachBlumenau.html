@@ -134,6 +134,14 @@
 
         /* PRINT STYLES */
         @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .print-only {
+                display: block !important;
+            }
+
             body {
                 background-color: white;
                 color: black;
@@ -231,8 +239,8 @@
             }
         }
 
-        /* Utility to show date only in print */
-        .print-only-date {
+        /* Utility to show only in print */
+        .print-only-date, .print-only {
             display: none;
         }
 
@@ -494,7 +502,11 @@
                             Data de Nascimento
                             <div class="subtitle">Geburtsdatum</div>
                         </th>
-                        <th class="text-center">Ação</th>
+                        <th class="text-center">
+                            Presença
+                            <div class="subtitle">Anwesenheit</div>
+                        </th>
+                        <th class="text-center no-print">Ação</th>
                     </tr>
                 </thead>
                 <tbody id="student-list">
@@ -648,6 +660,14 @@
                     <td class="font-mono" style="color: #374151;">${formatCPF(p.cpf)}</td>
                     <td style="color: #374151;">${formatDate(p.dob)}</td>
                     <td class="text-center">
+                        <div class="no-print">
+                            <input type="checkbox" ${p.present ? 'checked' : ''} onchange="togglePresence(${p.id})" style="transform: scale(1.5); cursor: pointer;">
+                        </div>
+                        <div class="print-only">
+                            ${p.present ? '&#9745;' : '&#9744;'}
+                        </div>
+                    </td>
+                    <td class="text-center no-print">
                         <button class="delete-btn" onclick="deleteCurrentStudent(${p.id})">&times;</button>
                     </td>
                 `;
@@ -727,6 +747,14 @@
         });
 
         // Student Management Functions
+        function togglePresence(id) {
+            const student = currentStudents.find(p => p.id === id);
+            if (student) {
+                student.present = !student.present;
+                renderCurrentStudentsTable();
+            }
+        }
+
         function deleteCurrentStudent(id) {
             currentStudents = currentStudents.filter(p => p.id !== id);
             renderCurrentStudentsTable();
@@ -759,7 +787,7 @@
         function addSavedStudentToCurrent(cpf) {
             const studentToAdd = savedStudents.find(p => p.cpf === cpf);
             if (studentToAdd && !currentStudents.some(p => p.cpf === cpf)) {
-                currentStudents.push({ ...studentToAdd, id: Date.now() });
+                currentStudents.push({ ...studentToAdd, id: Date.now(), present: false });
                 renderCurrentStudentsTable();
             } else {
                 alert("Este aluno já está na lista atual.");
@@ -796,7 +824,8 @@
                 id: Date.now(), // Simple unique ID
                 name: name,
                 cpf: cpf,
-                dob: dob
+                dob: dob,
+                present: false
             };
 
             currentStudents.push(newStudent);
