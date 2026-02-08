@@ -428,10 +428,14 @@
         <div class="header">
             <div class="title-group">
                 <h1>Lista de Alunos / Schülerliste</h1>
-                <p>Ausflug Datum / Data da Viagem: 13/12/2025</p>
-                <div class="print-only-date">
-                    <div>Data da Viagem: Sábado, 13 de Dezembro / 2025</div>
-                    <div>Ausflug Datum: Samstag, 13. Dezember / 2025</div>
+                <div class="trip-date-container" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+                    <p id="trip-date-display" style="margin: 0; color: #bfdbfe; font-size: 0.875rem;">Data da Viagem / Ausflug Datum: ...</p>
+                    <input type="date" id="trip-date-input" style="display: none;" onchange="updateTripDate(this.value)">
+                    <button class="print-btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background-color: #1e40af;" onclick="setTodayDate()">Hoje / Heute</button>
+                    <button class="print-btn" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; background-color: #1e40af;" onclick="document.getElementById('trip-date-input').showPicker()">Alterar</button>
+                </div>
+                <div id="print-date-display" class="print-only-date">
+                    <!-- Populated by JS -->
                 </div>
             </div>
             <div class="button-group">
@@ -547,6 +551,7 @@
         // Student Data
         let currentStudents = [];
         let savedStudents = [];
+        let tripDate = '2025-12-13';
 
         // DOM Elements
         const currentTbody = document.getElementById('student-list');
@@ -575,6 +580,47 @@
             if (event.target == modal) {
                 closeModal();
             }
+        }
+
+        // Trip Date Functions
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            updateTripDate(today);
+        }
+
+        function updateTripDate(dateString) {
+            if (!dateString) return;
+            tripDate = dateString;
+            localStorage.setItem('tripDate', tripDate);
+            renderTripDate();
+        }
+
+        function renderTripDate() {
+            const display = document.getElementById('trip-date-display');
+            const printDisplay = document.getElementById('print-date-display');
+
+            if (!tripDate) return;
+
+            const [year, month, day] = tripDate.split('-');
+            const dateObj = new Date(year, month - 1, day);
+
+            // Screen display
+            display.innerText = `Data da Viagem / Ausflug Datum: ${day}/${month}/${year}`;
+
+            // Formatting for print
+            const weekdaysPT = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+            const monthsPT = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+            const weekdaysDE = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+            const monthsDE = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+
+            const datePT = `${weekdaysPT[dateObj.getDay()]}, ${parseInt(day)} de ${monthsPT[dateObj.getMonth()]} / ${year}`;
+            const dateDE = `${weekdaysDE[dateObj.getDay()]}, ${parseInt(day)}. ${monthsDE[dateObj.getMonth()]} / ${year}`;
+
+            printDisplay.innerHTML = `
+                <div>Data da Viagem: ${datePT}</div>
+                <div>Ausflug Datum: ${dateDE}</div>
+            `;
         }
 
         // Helper Functions
@@ -670,6 +716,13 @@
             }
 
             loadSavedStudents();
+
+            const savedTripDate = localStorage.getItem('tripDate');
+            if (savedTripDate) {
+                tripDate = savedTripDate;
+            }
+            renderTripDate();
+
             renderAllTables();
         });
 
